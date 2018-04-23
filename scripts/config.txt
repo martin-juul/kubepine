@@ -1,0 +1,25 @@
+boot_delay=0
+
+# Serial console output!
+enable_uart=1
+
+# 64bit-mode
+arm_control=0x200
+
+kernel=boot/u-boot.bin
+
+# uncomment to force a console size. By default it will be display's size minus
+# overscan.
+framebuffer_width=1200
+framebuffer_height=700
+
+# uncomment to force a specific HDMI mode (this will force VGA)
+hdmi_group=1
+hdmi_mode=4
+
+device_tree_address=0x100
+device_tree_end=0x8000
+
+# For i2c & spi
+dtparam=i2c_arm=on
+dtparam=spi=on

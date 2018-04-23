@@ -1,0 +1,9 @@
+fdt addr 0x100
+fdt get value bootargs /chosen bootargs
+setenv kernel_addr_r 0x01000000
+setenv ramdisk_addr_r 0x02100000
+fatload mmc 0:1 ${kernel_addr_r} boot/Image
+fatload mmc 0:1 ${ramdisk_addr_r} boot/initramfs-rpi3
+setenv initrdsize $filesize
+fatload mmc 0:1 ${fdt_addr_r} bcm2710-rpi-3-b.dtb
+booti ${kernel_addr_r} ${ramdisk_addr_r}:${initrdsize} ${fdt_addr_r}
