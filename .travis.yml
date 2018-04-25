@@ -51,6 +51,8 @@ deploy:
   api_key: $GITHUB_TOKEN
   file_glob: true
   file: $TRAVIS_BUILD_DIR/alpine-rpi-3.7.0-aarch64-4.16-*.tar.xz
+  on:
+    tags: true
 
 env:
   global:
