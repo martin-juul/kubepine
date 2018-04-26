@@ -3,13 +3,6 @@
 BUILDDIR=/build
 OUTDIR=$BUILDDIR/output
 
-apt-add-repository universe
-apt-add-repository multiverse
-apt-get update
-apt-get -y install gcc-aarch64-linux-gnu git make gcc bc device-tree-compiler u-boot-tools \
-  ncurses-dev qemu-user-static wget cpio kmod squashfs-tools bison flex libssl-dev patch \
-  xz-utils b43-fwcutter bzip2
-
 mkdir -p $BUILDDIR/alpine
 mkdir -p $BUILDDIR/kernel-build
 mkdir -p $BUILDDIR/initramfs
@@ -20,7 +13,6 @@ cd $BUILDDIR
 git clone --depth 1 --branch rpi-4.16.y https://github.com/raspberrypi/linux.git kernel
 git clone --depth 1 https://github.com/raspberrypi/firmware.git pi-firmware
 git clone --depth 1 https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git linux-firmware
-git clone --depth 1 git://git.denx.de/u-boot.git u-boot
 wget -q http://dl-cdn.alpinelinux.org/alpine/v3.7/releases/aarch64/alpine-uboot-3.7.0-aarch64.tar.gz
 wget -q http://mirror2.openwrt.org/sources/broadcom-wl-4.150.10.5.tar.bz2
 
@@ -32,9 +24,6 @@ gunzip -c $BUILDDIR/alpine/boot/initramfs-vanilla | cpio -i
 export CROSS_COMPILE=aarch64-linux-gnu-
 export ARCH=arm64
 export LOCALVERSION=
-
-cd $BUILDDIR/u-boot
-make rpi_3_defconfig && make
 
 cd $BUILDDIR/kernel
 make kernelversion > $BUILDDIR/kernelversion
@@ -85,7 +74,7 @@ cp $BUILDDIR/alpine/alpine.apkovl.tar.gz $OUTDIR/
 cp -R $BUILDDIR/alpine/apks $OUTDIR/
 cp -R $BUILDDIR/modloop/lib/firmware/brcm $OUTDIR/firmware
 cp -R $BUILDDIR/modloop/lib/firmware/b43 $OUTDIR/firmware
-cp $BUILDDIR/u-boot/u-boot.bin $OUTDIR/boot/
+cp $BUILDDIR/u-boot.bin $OUTDIR/boot/
 cp $BUILDDIR/scripts/config.txt $OUTDIR/
 cp $BUILDDIR/scripts/cmdline.txt $OUTDIR/
 cd $OUTDIR && tar Jcf "$BUILDDIR/alpine-rpi-3.7.0-aarch64-$KERNELVERSION.tar.xz" .

@@ -3,27 +3,24 @@ sudo: true
 os:
 - linux
 
+before_script:
+- export CHROOTDIR=$TRAVIS_BUILD_DIR/chroot
+- export CACHEDIR=$HOME/cache
+- sudo -E chmod a+x $TRAVIS_BUILD_DIR/scripts/setup.sh && sudo -E $TRAVIS_BUILD_DIR/scripts/setup.sh
+
 jobs:
   include:
-  - stage: compile
+  - stage: compile u-boot
     script:
-    - sudo -E apt-get -y update
-    - sudo -E apt-get -y debootstrap dchroot apt dpkg dpkg-dev debianutils debconf binutils fakeroot
-    - export CHROOTDIR=$TRAVIS_BUILD_DIR/chroot
-    - sudo -E mkdir -p $CHROOTDIR
-    - chmod a+x $TRAVIS_BUILD_DIR/scripts/setup.sh && sudo -E $TRAVIS_BUILD_DIR/scripts/setup.sh
-    - cd $CHROOTDIR
-    - sudo -E chmod a+x build/scripts/build.sh
-    - sudo -E chroot $CHROOTDIR build/scripts/build.sh
+    - sudo -E chmod a+x $TRAVIS_BUILD_DIR/scripts/build_uboot.sh && sudo -E $TRAVIS_BUILD_DIR/scripts/build_uboot.sh
+  - stage: compile kernel
+    script:
+    - sudo -E cp "${CACHEDIR}/output/boot/u-boot.bin" $CHROOTDIR/build/
+    - sudo -E chmod a+x $CHROOTDIR/build/scripts/build.sh && sudo -E chroot $CHROOTDIR build/scripts/build.sh
     - sudo -E cp $CHROOTDIR/build/alpine-rpi-*.tar.xz $TRAVIS_BUILD_DIR/
     - sudo -E chmod a+rw $TRAVIS_BUILD_DIR/alpine-rpi-*.tar.xz
     - export KERNELVERSION=`sudo -E cat $CHROOTDIR/build/kernelversion`
-    - |
-      sudo -E umount -l $CHROOTDIR/dev/pts
-      sudo -E umount -l $CHROOTDIR/dev
-      sudo -E umount -l $CHROOTDIR/sys
-      sudo -E umount -l $CHROOTDIR/proc
-    - cd $TRAVIS_BUILD_DIR && sudo -E rm -rf $CHROOTDIR
+    - sudo -E chmod a+x $TRAVIS_BUILD_DIR/scripts/cleanup.sh && sudo -E $TRAVIS_BUILD_DIR/scripts/cleanup.sh
     - export TAG=$ALPINE_VERSION-kernel-$KERNELVERSION
     - |
       if [ "${TRAVIS_OS_NAME}" = "linux" ] &&
@@ -36,6 +33,8 @@ jobs:
 
 cache:
   apt: true
+  directories:
+    - $HOME/cache
 
 notifications:
   email:
