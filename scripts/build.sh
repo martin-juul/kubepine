@@ -29,14 +29,17 @@ export CROSS_COMPILE=aarch64-linux-gnu-
 export ARCH=arm64
 export LOCALVERSION=
 
-cd $BUILDDIR/u-boot && make rpi_3_defconfig && make
-cd $BUILDDIR/kernel && make O=$BUILDDIR/kernel-build bcmrpi3_defconfig
-cd $BUILDDIR/kernel && scripts/kconfig/merge_config.sh -O $BUILDDIR/kernel-build/ $BUILDDIR/kernel-build/.config $BUILDDIR/scripts/config.add
+cd $BUILDDIR/u-boot
+make rpi_3_defconfig && make
+
+cd $BUILDDIR/kernel
+make O=$BUILDDIR/kernel-build bcmrpi3_defconfig
+scripts/kconfig/merge_config.sh -O $BUILDDIR/kernel-build/ $BUILDDIR/kernel-build/.config $BUILDDIR/scripts/config.add
 make O=$BUILDDIR/kernel-build -j8
 make kernelversion > $BUILDDIR/kernelversion
 export KERNELVERSION=`cat $BUILDDIR/kernelversion`
 rm -rf $BUILDDIR/initramfs/lib/modules/4.*
-cd $BUILDDIR/kernel && make modules_install O=$BUILDDIR/kernel-build INSTALL_MOD_PATH=$BUILDDIR/initramfs/
+make modules_install O=$BUILDDIR/kernel-build INSTALL_MOD_PATH=$BUILDDIR/initramfs/
 cd $BUILDDIR/initramfs && find . | cpio -H newc -o | gzip -9 > $BUILDDIR/initramfs-rpi3-cpio
 cd $BUILDDIR && mkimage -A arm64 -O linux -T ramdisk -d initramfs-rpi3-cpio initramfs-rpi3
 mkdir -p $BUILDDIR/modloop/lib/firmware
@@ -72,4 +75,4 @@ cp -R $BUILDDIR/modloop/lib/firmware/b43 $BUILDDIR/output/firmware
 cp $BUILDDIR/u-boot/u-boot.bin $BUILDDIR/output/boot/
 cp $BUILDDIR/scripts/config.txt $BUILDDIR/output/
 cp $BUILDDIR/scripts/cmdline.txt $BUILDDIR/output/
-cd $BUILDDIR/output && tar Jcf $BUILDDIR/alpine-rpi-3.7.0-aarch64-$KERNELVERSION-$(date +'%Y%m%d%H%M%S').tar.xz .
+cd $BUILDDIR/output && tar Jcf $BUILDDIR/alpine-rpi-3.7.0-aarch64-$KERNELVERSION.tar.xz .
