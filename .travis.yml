@@ -28,9 +28,9 @@ script:
 - sudo -E chroot $CHROOTDIR build/scripts/build.sh
 
 after_success:
-- sudo -E cp $CHROOTDIR/build/alpine-rpi-3.7.0-aarch64-4.16-*.tar.xz $TRAVIS_BUILD_DIR/
-- sudo -E chmod a+rw $TRAVIS_BUILD_DIR/alpine-rpi-3.7.0-aarch64-4.16-*.tar.xz
-- export KERNELVERSION=`cat $TRAVIS_BUILD_DIR/kernelversion`
+- sudo -E cp $CHROOTDIR/build/alpine-rpi-*.tar.xz $TRAVIS_BUILD_DIR/
+- sudo -E chmod a+rw $TRAVIS_BUILD_DIR/alpine-rpi-*.tar.xz
+- export KERNELVERSION=`cat $CHROOTDIR/build/kernelversion`
 - |
   sudo -E umount -l $CHROOTDIR/dev/pts
   sudo -E umount -l $CHROOTDIR/dev
