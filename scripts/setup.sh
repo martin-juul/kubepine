@@ -5,8 +5,8 @@ mkdir -p "$CHROOTDIR"
 if [ -r "${CACHEDIR}/chroot.tar.gz" ]; then
     tar zxfpC "${CACHEDIR}/chroot.tar.gz" "$CHROOTDIR"
 else
-    apt-get -y update
-    apt-get -y debootstrap dchroot apt dpkg dpkg-dev debianutils debconf binutils fakeroot
+    apt-get -q update
+    apt-get -yq debootstrap dchroot apt dpkg dpkg-dev debianutils debconf binutils fakeroot
 
     cd "$CHROOTDIR"
     debootstrap --arch amd64 --variant=buildd --no-check-gpg --include=software-properties-common,sudo bionic . http://mirror.genesisadaptive.com/ubuntu/
