@@ -18,6 +18,7 @@ else
     mount -o bind /dev "$CHROOTDIR/dev/"
     mount -o bind /dev/pts "$CHROOTDIR/dev/pts"
 
+    ls -al $CHROOTDIR/build/scripts/
     chmod a+x $CHROOTDIR/build/scripts/setup_chroot.sh
     chroot $CHROOTDIR $CHROOTDIR/build/scripts/setup_chroot.sh
 
