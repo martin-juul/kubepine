@@ -32,8 +32,8 @@ export LOCALVERSION=
 cd $BUILDDIR/u-boot && make rpi_3_defconfig && make
 cd $BUILDDIR/kernel && make O=$BUILDDIR/kernel-build bcmrpi3_defconfig
 cd $BUILDDIR/kernel && scripts/kconfig/merge_config.sh -O $BUILDDIR/kernel-build/ $BUILDDIR/kernel-build/.config $BUILDDIR/scripts/config.add
-cd $BUILDDIR/kernel && make O=$BUILDDIR/kernel-build -j8
-cd $BUILDDIR/kernel && make O=$BUILDDIR/kernel-build kernelversion > $BUILDDIR/kernelversion
+make O=$BUILDDIR/kernel-build -j8
+make kernelversion > $BUILDDIR/kernelversion
 export KERNELVERSION=`cat $BUILDDIR/kernelversion`
 rm -rf $BUILDDIR/initramfs/lib/modules/4.*
 cd $BUILDDIR/kernel && make modules_install O=$BUILDDIR/kernel-build INSTALL_MOD_PATH=$BUILDDIR/initramfs/
