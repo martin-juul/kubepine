@@ -30,7 +30,7 @@ script:
 after_success:
 - sudo -E cp $CHROOTDIR/build/alpine-rpi-*.tar.xz $TRAVIS_BUILD_DIR/
 - sudo -E chmod a+rw $TRAVIS_BUILD_DIR/alpine-rpi-*.tar.xz
-- export KERNELVERSION=`cat $CHROOTDIR/build/kernelversion`
+- export KERNELVERSION=`sudo -E cat $CHROOTDIR/build/kernelversion`
 - |
   sudo -E umount -l $CHROOTDIR/dev/pts
   sudo -E umount -l $CHROOTDIR/dev

@@ -33,18 +33,27 @@ cd $BUILDDIR/u-boot
 make rpi_3_defconfig && make
 
 cd $BUILDDIR/kernel
+make kernelversion > $BUILDDIR/kernelversion
+export KERNELVERSION=`cat $BUILDDIR/kernelversion`
+echo KERNELVERSION=$KERNELVERSION
 make O=$BUILDDIR/kernel-build bcmrpi3_defconfig
 scripts/kconfig/merge_config.sh -O $BUILDDIR/kernel-build/ $BUILDDIR/kernel-build/.config $BUILDDIR/scripts/config.add
 make O=$BUILDDIR/kernel-build -j8
-make kernelversion > $BUILDDIR/kernelversion
-export KERNELVERSION=`cat $BUILDDIR/kernelversion`
 rm -rf $BUILDDIR/initramfs/lib/modules/4.*
 make modules_install O=$BUILDDIR/kernel-build INSTALL_MOD_PATH=$BUILDDIR/initramfs/
-cd $BUILDDIR/initramfs && find . | cpio -H newc -o | gzip -9 > $BUILDDIR/initramfs-rpi3-cpio
-cd $BUILDDIR && mkimage -A arm64 -O linux -T ramdisk -d initramfs-rpi3-cpio initramfs-rpi3
+
+cd $BUILDDIR/initramfs
+find . | cpio -H newc -o | gzip -9 > $BUILDDIR/initramfs-rpi3-cpio
+
+cd $BUILDDIR
+mkimage -A arm64 -O linux -T ramdisk -d initramfs-rpi3-cpio initramfs-rpi3
 mkdir -p $BUILDDIR/modloop/lib/firmware
-cd $BUILDDIR/linux-firmware && DESTDIR=$BUILDDIR/modloop make install
-cd $BUILDDIR/b43 && tar xjf $BUILDDIR/broadcom-wl-4.150.10.5.tar.bz2 --strip=1
+
+cd $BUILDDIR/linux-firmware
+DESTDIR=$BUILDDIR/modloop make install
+
+cd $BUILDDIR/b43
+tar xjf $BUILDDIR/broadcom-wl-4.150.10.5.tar.bz2 --strip=1
 b43-fwcutter -w $BUILDDIR/modloop/lib/firmware $BUILDDIR/b43/driver/wl_apsta_mimo.o
 mkimage -A arm64 -O linux -T script -C none -a 0 -e 0 -n "raspberry-pi" -d $BUILDDIR/scripts/boot.txt $BUILDDIR/boot.scr
 cp -R $BUILDDIR/initramfs/lib/modules $BUILDDIR/modloop/lib/
