@@ -11,7 +11,7 @@ jobs:
     - sudo -E apt-get -y debootstrap dchroot apt dpkg dpkg-dev debianutils debconf binutils fakeroot
     - export CHROOTDIR=$TRAVIS_BUILD_DIR/chroot
     - sudo -E mkdir -p $CHROOTDIR
-    - chmod a+x $TRAVIS_BUILD_DIR/setup.sh && sudo -E $TRAVIS_BUILD_DIR/setup.sh
+    - chmod a+x $TRAVIS_BUILD_DIR/scripts/setup.sh && sudo -E $TRAVIS_BUILD_DIR/scripts/setup.sh
     - cd $CHROOTDIR
     - sudo -E chmod a+x build/scripts/build.sh
     - sudo -E chroot $CHROOTDIR build/scripts/build.sh
