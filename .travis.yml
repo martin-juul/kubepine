@@ -3,24 +3,12 @@ sudo: true
 os:
 - linux
 
-addons:
-  apt:
-    packages:
-    - debootstrap
-    - dchroot
-    - apt
-    - dpkg
-    - dpkg-dev
-    - debianutils
-    - debconf
-    - binutils
-    - fakeroot
-
 jobs:
   include:
   - stage: compile
     script:
     - sudo -E apt-get -y update
+    - sudo -E apt-get -y debootstrap dchroot apt dpkg dpkg-dev debianutils debconf binutils fakeroot
     - export CHROOTDIR=$TRAVIS_BUILD_DIR/chroot
     - sudo -E mkdir -p $CHROOTDIR
     - chmod a+x $TRAVIS_BUILD_DIR/setup.sh && sudo -E $TRAVIS_BUILD_DIR/setup.sh
