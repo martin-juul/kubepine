@@ -3,9 +3,9 @@
 mkdir -p "$CHROOTDIR"
 
 if [ -d "${CACHEDIR}/u-boot" ]; then
-    git clone --depth 1 git://git.denx.de/u-boot.git "${CACHEDIR}/u-boot"
-else
     cd "${CACHEDIR}/u-boot" && git pull
+else
+    git clone --depth 1 git://git.denx.de/u-boot.git "${CACHEDIR}/u-boot"
 fi
 
 mkdir -p "$CHROOTDIR/build/u-boot"
