@@ -1,6 +1,7 @@
 #!/bin/bash -eu
 
 mkdir -p "$CHROOTDIR"
+mkdir -p ${CACHEDIR}/output
 
 if [ -d "${CACHEDIR}/u-boot" ]; then
     cd "${CACHEDIR}/u-boot" && git pull
