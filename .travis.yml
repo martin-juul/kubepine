@@ -42,8 +42,7 @@ after_success:
   if [ "${TRAVIS_OS_NAME}" = "linux" ] &&
      [ "${TRAVIS_BRANCH}" = "master" ] &&
      [ "${TRAVIS_PULL_REQUEST}" = "false" ] &&
-     [ "${TRAVIS_EVENT_TYPE}" = "push" ] &&
-     [ -z "$(git tag --contains)" ]; then
+     [ -z "$(git tag -l ${TAG})" ]; then
     git tag ${TAG}
     git push --quiet "https://${GITHUB_TOKEN}@github.com/chalharu/alpine-rpi-aarch64.git" ${TAG} >/dev/null 2>&1
   fi
