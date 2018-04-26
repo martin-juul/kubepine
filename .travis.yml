@@ -16,7 +16,7 @@ jobs:
   - stage: compile kernel
     script:
     - sudo -E cp "${CACHEDIR}/output/boot/u-boot.bin" $CHROOTDIR/build/
-    - sudo -E chmod a+x $CHROOTDIR/build/scripts/build.sh && sudo -E chroot $CHROOTDIR build/scripts/build.sh
+    - sudo -E chmod a+x $CHROOTDIR/build/scripts/build.sh && sudo -E chroot $CHROOTDIR /build/scripts/build.sh
     - sudo -E cp $CHROOTDIR/build/alpine-rpi-*.tar.xz $TRAVIS_BUILD_DIR/
     - sudo -E chmod a+rw $TRAVIS_BUILD_DIR/alpine-rpi-*.tar.xz
     - export KERNELVERSION=`sudo -E cat $CHROOTDIR/build/kernelversion`
