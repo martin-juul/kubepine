@@ -30,7 +30,7 @@ else
     tar czfpC "${CACHEDIR}/chroot.tar.gz" "$CHROOTDIR" .
 fi
 
-mount -o bind "$TRAVIS_BUILD_DIR/scripts" "$CHROOTDIR/build/"
+mount -o bind "$TRAVIS_BUILD_DIR/scripts" "$CHROOTDIR/build/scripts"
 mount -t sysfs sysfs "$CHROOTDIR/sys/"
 mount -t proc proc "$CHROOTDIR/proc/"
 mount -o bind /dev "$CHROOTDIR/dev/"
