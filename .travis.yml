@@ -17,11 +17,11 @@ jobs:
     - sudo -E chmod a+x $TRAVIS_BUILD_DIR/scripts/build_uboot.sh && sudo -E $TRAVIS_BUILD_DIR/scripts/build_uboot.sh
   - stage: compile kernel
     script:
-    - sudo -E cp "${CACHEDIR}/output/boot/u-boot.bin" $CHROOTDIR/build/
+    - sudo -E chmod a+x $TRAVIS_BUILD_DIR/scripts/build_kernel.sh && sudo -E $TRAVIS_BUILD_DIR/scripts/build_kernel.sh
+  - stage: compile other
+    script:
+    - export KERNELVERSION=`sudo -E cat ${CACHEDIR}/output/kernel/kernelversion`
     - sudo -E chmod a+x $CHROOTDIR/build/scripts/build.sh && sudo -E chroot $CHROOTDIR /build/scripts/build.sh
-    - sudo -E cp $CHROOTDIR/build/alpine-rpi-*.tar.xz $TRAVIS_BUILD_DIR/
-    - sudo -E chmod a+rw $TRAVIS_BUILD_DIR/alpine-rpi-*.tar.xz
-    - export KERNELVERSION=`sudo -E cat $CHROOTDIR/build/kernelversion`
     - sudo -E chmod a+x $TRAVIS_BUILD_DIR/scripts/cleanup.sh && sudo -E $TRAVIS_BUILD_DIR/scripts/cleanup.sh
     - export TAG=$ALPINE_VERSION-kernel-$KERNELVERSION
     - |
@@ -48,7 +48,7 @@ deploy:
   provider: releases
   api_key: $GITHUB_TOKEN
   file_glob: true
-  file: $TRAVIS_BUILD_DIR/alpine-rpi-*.tar.xz
+  file: ${CACHEDIR}/output/alpine-rpi-*.tar.xz
   on:
     tags: true
 

@@ -11,8 +11,8 @@ export CCACHE_DIR=/ccache
 cd $BUILDDIR/u-boot
 make rpi_3_defconfig && make
 
-mkdir -p $OUTDIR/boot
-mv $BUILDDIR/u-boot/u-boot.bin $OUTDIR/boot/
+mkdir -p $OUTDIR/u-boot
+mv $BUILDDIR/u-boot/u-boot.bin $OUTDIR/u-boot/
 
 git reset --hard
 git clean -dfx

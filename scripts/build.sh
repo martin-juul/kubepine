@@ -1,80 +1,49 @@
 #!/bin/bash -eu
 
-BUILDDIR=/build
-OUTDIR=$BUILDDIR/output
+mkdir -p "$CHROOTDIR"
+mkdir -p "${CACHEDIR}/output"
 
-mkdir -p $BUILDDIR/alpine
-mkdir -p $BUILDDIR/kernel-build
-mkdir -p $BUILDDIR/initramfs
-mkdir -p $BUILDDIR/modloop
-mkdir -p $BUILDDIR/b43
+if [ -d "${CACHEDIR}/pi-firmware" ]; then
+    cd "${CACHEDIR}/pi-firmware" && git pull
+else
+    git clone --depth 1 https://github.com/raspberrypi/firmware.git "${CACHEDIR}/pi-firmware"
+fi
 
-cd $BUILDDIR
-git clone --depth 1 --branch rpi-4.16.y https://github.com/raspberrypi/linux.git kernel
-git clone --depth 1 https://github.com/raspberrypi/firmware.git pi-firmware
-git clone --depth 1 https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git linux-firmware
-wget -q http://dl-cdn.alpinelinux.org/alpine/v3.7/releases/aarch64/alpine-uboot-3.7.0-aarch64.tar.gz
-wget -q http://mirror2.openwrt.org/sources/broadcom-wl-4.150.10.5.tar.bz2
+if [ -d "${CACHEDIR}/linux-firmware" ]; then
+    cd "${CACHEDIR}/linux-firmware" && git pull
+else
+    git clone --depth 1 https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git "${CACHEDIR}/linux-firmware"
+fi
 
-cd $BUILDDIR/alpine
-tar zxf $BUILDDIR/alpine-uboot-3.7.0-aarch64.tar.gz
-cd $BUILDDIR/initramfs
-gunzip -c $BUILDDIR/alpine/boot/initramfs-vanilla | cpio -i
+if [ ! -d "${CACHEDIR}/alpine-3.7.0" ]; then
+    rm -rf "${CACHEDIR}/alpine-*"
+    mkdir -p "${CACHEDIR}/alpine-3.7.0"
+    wget -O - http://dl-cdn.alpinelinux.org/alpine/v3.7/releases/aarch64/alpine-uboot-3.7.0-aarch64.tar.gz | tar zxfC - "${CACHEDIR}/alpine-3.7.0"
+fi
 
-export CROSS_COMPILE=aarch64-linux-gnu-
-export ARCH=arm64
-export LOCALVERSION=
+if [ ! -d "${CACHEDIR}/broadcom-wl-4.150.10.5" ]; then
+    rm -rf "${CACHEDIR}/broadcom-wl-*"
+    mkdir -p "${CACHEDIR}/broadcom-wl-4.150.10.5"
+    wget -O - http://mirror2.openwrt.org/sources/broadcom-wl-4.150.10.5.tar.bz2 | tar zxfC - "${CACHEDIR}/broadcom-wl-4.150.10.5" --strip=1
+fi
 
-cd $BUILDDIR/kernel
-make kernelversion > $BUILDDIR/kernelversion
-KERNELVERSION=$(cat $BUILDDIR/kernelversion)
-echo KERNELVERSION="$KERNELVERSION"
-make O=$BUILDDIR/kernel-build bcmrpi3_defconfig
-scripts/kconfig/merge_config.sh -O $BUILDDIR/kernel-build/ $BUILDDIR/kernel-build/.config $BUILDDIR/scripts/config.add
-make O=$BUILDDIR/kernel-build -j8
-rm -rf $BUILDDIR/initramfs/lib/modules/4.*
-make modules_install O=$BUILDDIR/kernel-build INSTALL_MOD_PATH=$BUILDDIR/initramfs/
+mkdir -p "$CHROOTDIR/build/pi-firmware"
+mkdir -p "$CHROOTDIR/build/linux-firmware"
+mkdir -p "$CHROOTDIR/build/alpine"
+mkdir -p "$CHROOTDIR/build/broadcom-wl"
+mkdir -p "$CHROOTDIR/build/output"
+mount -o bind "${CACHEDIR}/pi-firmware" "$CHROOTDIR/build/pi-firmware"
+mount -o bind "${CACHEDIR}/linux-firmware" "$CHROOTDIR/build/linux-firmware"
+mount -o bind "${CACHEDIR}/alpine-3.7.0" "$CHROOTDIR/build/alpine"
+mount -o bind "${CACHEDIR}/broadcom-wl-4.150.10.5" "$CHROOTDIR/build/broadcom-wl"
+mount -o bind "${CACHEDIR}/output" "$CHROOTDIR/build/output"
 
-cd $BUILDDIR/initramfs
-find . | cpio -H newc -o | gzip -9 > $BUILDDIR/initramfs-rpi3-cpio
+chroot $CHROOTDIR /build/scripts/build_chroot.sh
 
-cd $BUILDDIR
-mkimage -A arm64 -O linux -T ramdisk -d initramfs-rpi3-cpio initramfs-rpi3
-mkdir -p $BUILDDIR/modloop/lib/firmware
+umount -l "$CHROOTDIR/build/output"
+umount -l "$CHROOTDIR/build/pi-firmware"
+umount -l "$CHROOTDIR/build/linux-firmware"
+umount -l "$CHROOTDIR/build/alpine"
+umount -l "$CHROOTDIR/build/broadcom-wl"
 
-cd $BUILDDIR/linux-firmware
-DESTDIR=$BUILDDIR/modloop make install
-
-cd $BUILDDIR/b43
-tar xjf $BUILDDIR/broadcom-wl-4.150.10.5.tar.bz2 --strip=1
-b43-fwcutter -w $BUILDDIR/modloop/lib/firmware $BUILDDIR/b43/driver/wl_apsta_mimo.o
-mkimage -A arm64 -O linux -T script -C none -a 0 -e 0 -n "raspberry-pi" -d $BUILDDIR/scripts/boot.txt $BUILDDIR/boot.scr
-cp -R $BUILDDIR/initramfs/lib/modules $BUILDDIR/modloop/lib/
-mksquashfs $BUILDDIR/modloop/lib/ $BUILDDIR/modloop-rpi3 -comp xz -Xdict-size 100%
-
-mkdir -p $OUTDIR/boot
-mkdir -p $OUTDIR/firmware
-cp $BUILDDIR/kernel-build/arch/arm64/boot/Image $OUTDIR/boot/Image
-cp $BUILDDIR/kernel-build/arch/arm64/boot/dts/broadcom/bcm2710-rpi-3-b.dtb $OUTDIR/
-cp $BUILDDIR/kernel-build/arch/arm64/boot/dts/broadcom/bcm2710-rpi-3-b-plus.dtb $OUTDIR/
-cp $BUILDDIR/initramfs-rpi3 $OUTDIR/boot/
-cp $BUILDDIR/modloop-rpi3 $OUTDIR/boot/
-cp $BUILDDIR/boot.scr $OUTDIR/boot/
-cp $BUILDDIR/pi-firmware/boot/bootcode.bin $OUTDIR/
-cp $BUILDDIR/pi-firmware/boot/start.elf $OUTDIR/
-cp $BUILDDIR/pi-firmware/boot/fixup.dat $OUTDIR/
-cp $BUILDDIR/pi-firmware/boot/start_cd.elf $OUTDIR/
-cp $BUILDDIR/pi-firmware/boot/fixup_cd.dat $OUTDIR/
-cp $BUILDDIR/pi-firmware/boot/start_x.elf $OUTDIR/
-cp $BUILDDIR/pi-firmware/boot/fixup_x.dat $OUTDIR/
-cp $BUILDDIR/pi-firmware/boot/start_db.elf $OUTDIR/
-cp $BUILDDIR/pi-firmware/boot/fixup_db.dat $OUTDIR/
-cp $BUILDDIR/pi-firmware/boot/bcm2710-rpi-cm3.dtb $OUTDIR/
-cp $BUILDDIR/alpine/alpine.apkovl.tar.gz $OUTDIR/
-cp -R $BUILDDIR/alpine/apks $OUTDIR/
-cp -R $BUILDDIR/modloop/lib/firmware/brcm $OUTDIR/firmware
-cp -R $BUILDDIR/modloop/lib/firmware/b43 $OUTDIR/firmware
-cp $BUILDDIR/u-boot.bin $OUTDIR/boot/
-cp $BUILDDIR/scripts/config.txt $OUTDIR/
-cp $BUILDDIR/scripts/cmdline.txt $OUTDIR/
-cd $OUTDIR && tar Jcf "$BUILDDIR/alpine-rpi-3.7.0-aarch64-$KERNELVERSION.tar.xz" .
+chmod a+rw -R "$CHROOTDIR/build/output"

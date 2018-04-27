@@ -19,5 +19,4 @@ chroot $CHROOTDIR /build/scripts/build_uboot_chroot.sh
 umount -l "$CHROOTDIR/build/output"
 umount -l "$CHROOTDIR/build/u-boot"
 
-chmod a+rw -R "$CHROOTDIR/build/u-boot"
 chmod a+rw -R "$CHROOTDIR/build/output"
