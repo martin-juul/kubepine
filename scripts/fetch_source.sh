@@ -27,11 +27,11 @@ fi
 if [ ! -d "${CACHEDIR}/alpine-3.7.0" ]; then
     rm -rf "${CACHEDIR}/alpine-*"
     mkdir -p "${CACHEDIR}/alpine-3.7.0"
-    wget -O - http://dl-cdn.alpinelinux.org/alpine/v3.7/releases/aarch64/alpine-uboot-3.7.0-aarch64.tar.gz | tar xfC - "${CACHEDIR}/alpine-3.7.0"
+    wget -q -O - http://dl-cdn.alpinelinux.org/alpine/v3.7/releases/aarch64/alpine-uboot-3.7.0-aarch64.tar.gz | tar xfC - "${CACHEDIR}/alpine-3.7.0"
 fi
 
 if [ ! -d "${CACHEDIR}/broadcom-wl-4.150.10.5" ]; then
     rm -rf "${CACHEDIR}/broadcom-wl-*"
     mkdir -p "${CACHEDIR}/broadcom-wl-4.150.10.5"
-    wget -O - http://mirror2.openwrt.org/sources/broadcom-wl-4.150.10.5.tar.bz2 | tar xfC - "${CACHEDIR}/broadcom-wl-4.150.10.5" --strip=1
+    wget -q -O - http://mirror2.openwrt.org/sources/broadcom-wl-4.150.10.5.tar.bz2 | tar xfC - "${CACHEDIR}/broadcom-wl-4.150.10.5" --strip=1
 fi
