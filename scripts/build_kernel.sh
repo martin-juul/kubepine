@@ -6,6 +6,7 @@ mkdir -p "${CACHEDIR}/output"
 mkdir -p "$CHROOTDIR/build/kernel"
 mkdir -p "$CHROOTDIR/build/output"
 
+mkdir -p "${TRAVIS_BUILD_DIR}/kernel"
 tar zxfpC "${CACHEDIR}/kernel.tar.gz" "${TRAVIS_BUILD_DIR}/kernel"
 
 mount -o bind "${TRAVIS_BUILD_DIR}/kernel" "$CHROOTDIR/build/kernel"

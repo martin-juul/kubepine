@@ -3,6 +3,7 @@
 mkdir -p "$CHROOTDIR"
 mkdir -p ${CACHEDIR}/output
 
+mkdir -p "${TRAVIS_BUILD_DIR}/u-boot"
 tar zxfpC "${CACHEDIR}/u-boot.tar.gz" "${TRAVIS_BUILD_DIR}/u-boot"
 
 mkdir -p "$CHROOTDIR/build/u-boot"
