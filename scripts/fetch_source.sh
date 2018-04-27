@@ -1,6 +1,7 @@
 #!/bin/bash -eu
 
 if [ -f "${CACHEDIR}/u-boot.tar.gz" ]; then
+    mkdir -p "${TRAVIS_BUILD_DIR}/u-boot"
     tar zxfpC "${CACHEDIR}/u-boot.tar.gz" "${TRAVIS_BUILD_DIR}/u-boot"
     cd "${TRAVIS_BUILD_DIR}/u-boot" && git pull
 else
@@ -10,6 +11,7 @@ tar czfpC "${CACHEDIR}/u-boot.tar.gz" "${TRAVIS_BUILD_DIR}/u-boot" .
 rm -rf "${TRAVIS_BUILD_DIR}/u-boot"
 
 if [ -f "${CACHEDIR}/kernel.tar.gz" ]; then
+    mkdir -p "${TRAVIS_BUILD_DIR}/kernel"
     tar zxfpC "${CACHEDIR}/kernel.tar.gz" "${TRAVIS_BUILD_DIR}/kernel"
     cd "${TRAVIS_BUILD_DIR}/kernel" && git pull
 else
@@ -19,6 +21,7 @@ tar czfpC "${CACHEDIR}/kernel.tar.gz" "${TRAVIS_BUILD_DIR}/kernel" .
 rm -rf "${TRAVIS_BUILD_DIR}/kernel"
 
 if [ -f "${CACHEDIR}/pi-firmware.tar.gz" ]; then
+    mkdir -p "${TRAVIS_BUILD_DIR}/pi-firmware"
     tar zxfpC "${CACHEDIR}/pi-firmware.tar.gz" "${TRAVIS_BUILD_DIR}/pi-firmware"
     cd "${TRAVIS_BUILD_DIR}/pi-firmware" && git pull
 else
@@ -28,6 +31,7 @@ tar czfpC "${CACHEDIR}/pi-firmware.tar.gz" "${TRAVIS_BUILD_DIR}/pi-firmware" .
 rm -rf "${TRAVIS_BUILD_DIR}/pi-firmware"
 
 if [ -f "${CACHEDIR}/linux-firmware.tar.gz" ]; then
+    mkdir -p "${TRAVIS_BUILD_DIR}/linux-firmware"
     tar zxfpC "${CACHEDIR}/linux-firmware.tar.gz" "${TRAVIS_BUILD_DIR}/linux-firmware"
     cd "${TRAVIS_BUILD_DIR}/linux-firmware" && git pull
 else
