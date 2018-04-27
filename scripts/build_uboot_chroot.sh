@@ -13,6 +13,3 @@ make rpi_3_defconfig && make
 
 mkdir -p $OUTDIR/u-boot
 mv $BUILDDIR/u-boot/u-boot.bin $OUTDIR/u-boot/
-
-git reset --hard
-git clean -dfx

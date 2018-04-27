@@ -9,10 +9,15 @@ mkdir -p "$CHROOTDIR/build/alpine"
 mkdir -p "$CHROOTDIR/build/broadcom-wl"
 mkdir -p "$CHROOTDIR/build/output"
 
-mount -o bind "${CACHEDIR}/pi-firmware" "$CHROOTDIR/build/pi-firmware"
-mount -o bind "${CACHEDIR}/linux-firmware" "$CHROOTDIR/build/linux-firmware"
-mount -o bind "${CACHEDIR}/alpine-3.7.0" "$CHROOTDIR/build/alpine"
-mount -o bind "${CACHEDIR}/broadcom-wl-4.150.10.5" "$CHROOTDIR/build/broadcom-wl"
+tar zxfpC "${CACHEDIR}/pi-firmware.tar.gz" "${TRAVIS_BUILD_DIR}/pi-firmware"
+tar zxfpC "${CACHEDIR}/linux-firmware.tar.gz" "${TRAVIS_BUILD_DIR}/linux-firmware"
+tar zxfpC "${CACHEDIR}/alpine-uboot-3.7.0-aarch64.tar.gz" "${TRAVIS_BUILD_DIR}/alpine"
+tar zxfpC "${CACHEDIR}/broadcom-wl-4.150.10.5.tar.bz2" "${TRAVIS_BUILD_DIR}/broadcom-wl"
+
+mount -o bind "${TRAVIS_BUILD_DIR}/pi-firmware" "$CHROOTDIR/build/pi-firmware"
+mount -o bind "${TRAVIS_BUILD_DIR}/linux-firmware" "$CHROOTDIR/build/linux-firmware"
+mount -o bind "${TRAVIS_BUILD_DIR}/alpine" "$CHROOTDIR/build/alpine"
+mount -o bind "${TRAVIS_BUILD_DIR}/broadcom-wl" "$CHROOTDIR/build/broadcom-wl"
 mount -o bind "${CACHEDIR}/output" "$CHROOTDIR/build/output"
 
 chroot $CHROOTDIR /build/scripts/build_chroot.sh

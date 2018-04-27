@@ -28,6 +28,3 @@ mv $BUILDDIR/kernel-build/arch/arm64/boot/dts/broadcom/bcm2710-rpi-3-b-plus.dtb 
 
 rm -rf $BUILDDIR/kernel-build
 rm -rf $BUILDDIR/initramfs
-
-git reset --hard
-git clean -dfx

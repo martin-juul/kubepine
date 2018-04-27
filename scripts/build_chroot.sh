@@ -51,15 +51,3 @@ cd $OUTDIR/all && tar Jcf "$OUTDIR/alpine-rpi-3.7.0-aarch64-$KERNELVERSION.tar.x
 
 rm -rf $BUILDDIR/initramfs-rpi3
 rm -rf $BUILDDIR/modloop-rpi3
-
-cd $BUILDDIR/pi-firmware
-git reset --hard
-git clean -dfx
-
-cd $BUILDDIR/linux-firmware
-git reset --hard
-git clean -dfx
-
-cd $BUILDDIR/alpine
-git reset --hard
-git clean -dfx
