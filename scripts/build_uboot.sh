@@ -3,12 +3,6 @@
 mkdir -p "$CHROOTDIR"
 mkdir -p ${CACHEDIR}/output
 
-if [ -d "${CACHEDIR}/u-boot" ]; then
-    cd "${CACHEDIR}/u-boot" && git pull
-else
-    git clone --depth 1 git://git.denx.de/u-boot.git "${CACHEDIR}/u-boot"
-fi
-
 mkdir -p "$CHROOTDIR/build/u-boot"
 mkdir -p "$CHROOTDIR/build/output"
 mount -o bind "${CACHEDIR}/u-boot" "$CHROOTDIR/build/u-boot"

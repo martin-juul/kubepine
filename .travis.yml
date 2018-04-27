@@ -12,6 +12,9 @@ before_script:
 
 jobs:
   include:
+  - stage: fetch source
+    script:
+    - sudo -E chmod a+x $TRAVIS_BUILD_DIR/scripts/fetch_source.sh && sudo -E $TRAVIS_BUILD_DIR/scripts/fetch_source.sh
   - stage: compile u-boot
     script:
     - sudo -E chmod a+x $TRAVIS_BUILD_DIR/scripts/build_uboot.sh && sudo -E $TRAVIS_BUILD_DIR/scripts/build_uboot.sh
