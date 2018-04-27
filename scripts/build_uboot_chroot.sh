@@ -3,9 +3,10 @@
 BUILDDIR=/build
 OUTDIR=$BUILDDIR/output
 
-export CROSS_COMPILE=aarch64-linux-gnu-
+export CROSS_COMPILE=ccache aarch64-linux-gnu-
 export ARCH=arm64
 export LOCALVERSION=
+export CCACHE_DIR=/ccache
 
 cd $BUILDDIR/u-boot
 make rpi_3_defconfig && make
