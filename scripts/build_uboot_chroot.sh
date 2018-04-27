@@ -3,9 +3,6 @@
 BUILDDIR=/build
 OUTDIR=$BUILDDIR/output
 
-cd $BUILDDIR
-git clone --depth 1 git://git.denx.de/u-boot.git u-boot
-
 export CROSS_COMPILE=aarch64-linux-gnu-
 export ARCH=arm64
 export LOCALVERSION=
