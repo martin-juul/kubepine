@@ -14,4 +14,4 @@ mkdir -p $OUTDIR/boot
 mv $BUILDDIR/u-boot/u-boot.bin $OUTDIR/boot/
 
 git reset --hard
-git clean -df
+git clean -dfx
