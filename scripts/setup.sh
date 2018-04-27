@@ -1,6 +1,7 @@
 #!/bin/bash -eu
 
 mkdir -p "$CHROOTDIR"
+mkdir -p "${CACHEDIR}/ccache"
 
 if [ -r "${CACHEDIR}/chroot.tar.gz" ]; then
     tar zxfpC "${CACHEDIR}/chroot.tar.gz" "$CHROOTDIR"
@@ -30,6 +31,10 @@ else
     tar czfpC "${CACHEDIR}/chroot.tar.gz" "$CHROOTDIR" .
 fi
 
+mkdir -p "$CHROOTDIR/build/scripts"
+mkdir -p "$CHROOTDIR/ccache"
+
+mount -o bind "$CACHEDIR/ccache" "$CHROOTDIR/ccache"
 mount -o bind "$TRAVIS_BUILD_DIR/scripts" "$CHROOTDIR/build/scripts"
 mount -t sysfs sysfs "$CHROOTDIR/sys/"
 mount -t proc proc "$CHROOTDIR/proc/"
