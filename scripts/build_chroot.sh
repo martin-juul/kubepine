@@ -23,7 +23,7 @@ mksquashfs $BUILDDIR/modloop/lib/ $BUILDDIR/modloop-rpi3 -comp xz -Xdict-size 10
 mkdir -p $OUTDIR/all/boot
 mkdir -p $OUTDIR/all/firmware
 
-mv $BUILDDIR/kernel/Image $OUTDIR/all/boot/
+mv $OUTDIR/kernel/Image $OUTDIR/all/boot/
 mv $OUTDIR/kernel/bcm2710-rpi-3-b.dtb $OUTDIR/all/
 mv $OUTDIR/kernel/bcm2710-rpi-3-b-plus.dtb $OUTDIR/all/
 mv $OUTDIR/u-boot/u-boot.bin $OUTDIR/all/boot/
