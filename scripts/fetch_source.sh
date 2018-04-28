@@ -6,13 +6,24 @@ function fetch_git() {
     if [ -f "${CACHEFILENAME}" ]; then
         mkdir -p "${WORKDIR}"
         tar zxfpC "${CACHEFILENAME}" "${WORKDIR}"
-        cd "${WORKDIR}" && git pull
+        cd "${WORKDIR}"
+
+        LATEST_REV=$(git ls-remote origin HEAD | awk '{print $1}')
+        CURRENT_REV=$(git rev-parse HEAD)
+        if [ "$LATEST_REV" != "$CURRENT_REV" ]; then
+            git fetch --depth=1
+            git merge FETCH_HEAD
+            git fetch --depth=1
+            git gc
+            tar czfpC "${CACHEFILENAME}" "${WORKDIR}" .
+        fi
     elif [ $# -eq 2 ]; then
         git clone --depth 1 $2 "${WORKDIR}"
+        tar czfpC "${CACHEFILENAME}" "${WORKDIR}" .
     else
         git clone --depth 1 --branch $3 $2 "${WORKDIR}"
+        tar czfpC "${CACHEFILENAME}" "${WORKDIR}" .
     fi
-    tar czfpC "${CACHEFILENAME}" "${WORKDIR}" .
     rm -rf "${WORKDIR}"
 }
 
