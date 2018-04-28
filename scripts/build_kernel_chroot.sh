@@ -16,7 +16,7 @@ KERNELVERSION=$(cat $OUTDIR/kernel/kernelversion)
 echo KERNELVERSION="$KERNELVERSION"
 make O=$BUILDDIR/kernel-build bcmrpi3_defconfig
 scripts/kconfig/merge_config.sh -O $BUILDDIR/kernel-build/ $BUILDDIR/kernel-build/.config $BUILDDIR/scripts/config.add
-make O=$BUILDDIR/kernel-build -j8
+make O=$BUILDDIR/kernel-build -j8 | awk '{ if (NR % 100 == 1) print; fflush()}'
 
 mkdir -p $BUILDDIR/initramfs
 make modules_install O=$BUILDDIR/kernel-build INSTALL_MOD_PATH=$BUILDDIR/initramfs/
