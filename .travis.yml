@@ -35,6 +35,14 @@ jobs:
         git tag ${TAG}
         git push --quiet "https://${GITHUB_TOKEN}@github.com/chalharu/alpine-rpi-aarch64.git" ${TAG} >/dev/null 2>&1
       fi
+    deploy:
+      skip_cleanup: true
+      provider: releases
+      api_key: $GITHUB_TOKEN
+      file_glob: true
+      file: ${CACHEDIR}/output/alpine-rpi-*.tar.xz
+      on:
+        tags: true
 
 cache:
   apt: true
@@ -45,15 +53,6 @@ notifications:
   email:
     on_success: never
     on_failure: always
-
-deploy:
-  skip_cleanup: true
-  provider: releases
-  api_key: $GITHUB_TOKEN
-  file_glob: true
-  file: ${CACHEDIR}/output/alpine-rpi-*.tar.xz
-  on:
-    tags: true
 
 env:
   global:
