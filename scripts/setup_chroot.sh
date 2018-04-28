@@ -1,4 +1,4 @@
-#!/bin/bash -eu
+#!/bin/bash -eux
 
 apt-add-repository universe
 apt-add-repository multiverse

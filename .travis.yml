@@ -24,7 +24,7 @@ jobs:
   - stage: compile other
     script:
     - export KERNELVERSION=`sudo -E cat ${CACHEDIR}/output/kernel/kernelversion`
-    - sudo -E chmod a+x $CHROOTDIR/build/scripts/build.sh && sudo -E chroot $CHROOTDIR /build/scripts/build.sh
+    - sudo -E chmod a+x $CHROOTDIR/build/scripts/build.sh && sudo -E $CHROOTDIR/build/scripts/build.sh
     - sudo -E chmod a+x $TRAVIS_BUILD_DIR/scripts/cleanup.sh && sudo -E $TRAVIS_BUILD_DIR/scripts/cleanup.sh
     - export TAG=$ALPINE_VERSION-kernel-$KERNELVERSION
     - |

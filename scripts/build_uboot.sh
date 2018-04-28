@@ -1,10 +1,21 @@
-#!/bin/bash -eu
+#!/bin/bash -eux
+
+function teardown() {
+    umount -l "$CHROOTDIR/build/output"
+    umount -l "$CHROOTDIR/build/u-boot"
+
+    rm -rf "${TRAVIS_BUILD_DIR}/u-boot"
+
+    chmod a+rw -R "$CHROOTDIR/build/output"
+}
 
 mkdir -p "$CHROOTDIR"
 mkdir -p ${CACHEDIR}/output
 
 mkdir -p "${TRAVIS_BUILD_DIR}/u-boot"
 tar zxfpC "${CACHEDIR}/u-boot.tar.gz" "${TRAVIS_BUILD_DIR}/u-boot"
+
+trap teardown EXIT
 
 mkdir -p "$CHROOTDIR/build/u-boot"
 mkdir -p "$CHROOTDIR/build/output"
@@ -13,9 +24,3 @@ mount -o bind "${CACHEDIR}/output" "$CHROOTDIR/build/output"
 
 chroot $CHROOTDIR /build/scripts/build_uboot_chroot.sh
 
-umount -l "$CHROOTDIR/build/output"
-umount -l "$CHROOTDIR/build/u-boot"
-
-rm -rf "${TRAVIS_BUILD_DIR}/u-boot"
-
-chmod a+rw -R "$CHROOTDIR/build/output"

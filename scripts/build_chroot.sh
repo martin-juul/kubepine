@@ -1,4 +1,4 @@
-#!/bin/bash -eu
+#!/bin/bash -eux
 
 BUILDDIR=/build
 OUTDIR=$BUILDDIR/output

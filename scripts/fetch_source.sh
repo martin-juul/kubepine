@@ -1,49 +1,31 @@
-#!/bin/bash -eu
+#!/bin/bash -eux
 
-if [ -f "${CACHEDIR}/u-boot.tar.gz" ]; then
-    mkdir -p "${TRAVIS_BUILD_DIR}/u-boot"
-    tar zxfpC "${CACHEDIR}/u-boot.tar.gz" "${TRAVIS_BUILD_DIR}/u-boot"
-    cd "${TRAVIS_BUILD_DIR}/u-boot" && git pull
-else
-    git clone --depth 1 git://git.denx.de/u-boot.git "${TRAVIS_BUILD_DIR}/u-boot"
-fi
-tar czfpC "${CACHEDIR}/u-boot.tar.gz" "${TRAVIS_BUILD_DIR}/u-boot" .
-rm -rf "${TRAVIS_BUILD_DIR}/u-boot"
+function fetch_git() {
+    CACHEFILENAME="${CACHEDIR}/$1.tar.gz"
+    WORKDIR="${TRAVIS_BUILD_DIR}/$1"
+    if [ -f "${CACHEFILENAME}" ]; then
+        mkdir -p "${WORKDIR}"
+        tar zxfpC "${CACHEFILENAME}" "${WORKDIR}"
+        cd "${WORKDIR}" && git pull
+    elif [ $# -eq 2 ]; then
+        git clone --depth 1 $2 "${WORKDIR}"
+    else
+        git clone --depth 1 --branch $3 $2 "${WORKDIR}"
+    fi
+    tar czfpC "${CACHEFILENAME}" "${WORKDIR}" .
+    rm -rf "${WORKDIR}"
+}
 
-if [ -f "${CACHEDIR}/kernel.tar.gz" ]; then
-    mkdir -p "${TRAVIS_BUILD_DIR}/kernel"
-    tar zxfpC "${CACHEDIR}/kernel.tar.gz" "${TRAVIS_BUILD_DIR}/kernel"
-    cd "${TRAVIS_BUILD_DIR}/kernel" && git pull
-else
-    git clone --depth 1 --branch rpi-4.16.y https://github.com/raspberrypi/linux.git "${TRAVIS_BUILD_DIR}/kernel"
-fi
-tar czfpC "${CACHEDIR}/kernel.tar.gz" "${TRAVIS_BUILD_DIR}/kernel" .
-rm -rf "${TRAVIS_BUILD_DIR}/kernel"
+function fetch_file() {
+    if [ ! -f "${CACHEDIR}/$1" ]; then
+        wget -q -O ${CACHEDIR}/$1 $2
+    fi
+}
 
-if [ -f "${CACHEDIR}/pi-firmware.tar.gz" ]; then
-    mkdir -p "${TRAVIS_BUILD_DIR}/pi-firmware"
-    tar zxfpC "${CACHEDIR}/pi-firmware.tar.gz" "${TRAVIS_BUILD_DIR}/pi-firmware"
-    cd "${TRAVIS_BUILD_DIR}/pi-firmware" && git pull
-else
-    git clone --depth 1 https://github.com/raspberrypi/firmware.git "${TRAVIS_BUILD_DIR}/pi-firmware"
-fi
-tar czfpC "${CACHEDIR}/pi-firmware.tar.gz" "${TRAVIS_BUILD_DIR}/pi-firmware" .
-rm -rf "${TRAVIS_BUILD_DIR}/pi-firmware"
+fetch_git u-boot git://git.denx.de/u-boot.git
+fetch_git pi-firmware https://github.com/raspberrypi/firmware.git
+fetch_git linux-firmware https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git
+fetch_git kernel https://github.com/raspberrypi/linux.git rpi-4.16.y
 
-if [ -f "${CACHEDIR}/linux-firmware.tar.gz" ]; then
-    mkdir -p "${TRAVIS_BUILD_DIR}/linux-firmware"
-    tar zxfpC "${CACHEDIR}/linux-firmware.tar.gz" "${TRAVIS_BUILD_DIR}/linux-firmware"
-    cd "${TRAVIS_BUILD_DIR}/linux-firmware" && git pull
-else
-    git clone --depth 1 https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git "${TRAVIS_BUILD_DIR}/linux-firmware"
-fi
-tar czfpC "${CACHEDIR}/linux-firmware.tar.gz" "${TRAVIS_BUILD_DIR}/linux-firmware" .
-rm -rf "${TRAVIS_BUILD_DIR}/linux-firmware"
-
-if [ ! -f "${CACHEDIR}/alpine-uboot-3.7.0-aarch64.tar.gz" ]; then
-    wget -q -O ${CACHEDIR}/alpine-uboot-3.7.0-aarch64.tar.gz http://dl-cdn.alpinelinux.org/alpine/v3.7/releases/aarch64/alpine-uboot-3.7.0-aarch64.tar.gz
-fi
-
-if [ ! -f "${CACHEDIR}/broadcom-wl-4.150.10.5.tar.bz2" ]; then
-    wget -q -O ${CACHEDIR}/broadcom-wl-4.150.10.5.tar.bz2 http://mirror2.openwrt.org/sources/broadcom-wl-4.150.10.5.tar.bz2
-fi
+fetch_file alpine-uboot-3.7.0-aarch64.tar.gz http://dl-cdn.alpinelinux.org/alpine/v3.7/releases/aarch64/alpine-uboot-3.7.0-aarch64.tar.gz
+fetch_file broadcom-wl-4.150.10.5.tar.bz2 http://mirror2.openwrt.org/sources/broadcom-wl-4.150.10.5.tar.bz2

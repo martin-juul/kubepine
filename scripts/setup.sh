@@ -1,4 +1,4 @@
-#!/bin/bash -eu
+#!/bin/bash -eux
 
 mkdir -p "$CHROOTDIR"
 mkdir -p "${CACHEDIR}/ccache"
