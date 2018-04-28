@@ -8,7 +8,11 @@ function fetch_git() {
         tar zxfpC "${CACHEFILENAME}" "${WORKDIR}"
         cd "${WORKDIR}"
 
-        LATEST_REV=$(git ls-remote origin HEAD | awk '{print $1}')
+        BRANCHNAME=HEAD
+        if [ $# -eq 3 ]; then
+            BRANCHNAME=$3
+        fi
+        LATEST_REV=$(git ls-remote origin $BRANCHNAME | awk '{print $1}')
         CURRENT_REV=$(git rev-parse HEAD)
         if [ "$LATEST_REV" != "$CURRENT_REV" ]; then
             git fetch --depth=1
