@@ -15,7 +15,7 @@ function fetch_git() {
         LATEST_REV=$(git ls-remote origin $BRANCHNAME | awk '{print $1}')
         CURRENT_REV=$(git rev-parse HEAD)
         if [ "$LATEST_REV" != "$CURRENT_REV" ]; then
-            git fetch --depth=1
+            git fetch
             git merge FETCH_HEAD
             git fetch --depth=1
             git gc
