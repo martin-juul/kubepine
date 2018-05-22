@@ -23,10 +23,11 @@ jobs:
     - sudo -E chmod a+x $TRAVIS_BUILD_DIR/scripts/build_kernel.sh && sudo -E $TRAVIS_BUILD_DIR/scripts/build_kernel.sh
   - stage: compile other
     script:
+    - export REV=$(git rev-parse HEAD | cut -c 1-8)
     - export KERNELVERSION=`sudo -E cat ${CACHEDIR}/output/kernel/kernelversion`
     - sudo -E chmod a+x $CHROOTDIR/build/scripts/build.sh && sudo -E $CHROOTDIR/build/scripts/build.sh
     - sudo -E chmod a+x $TRAVIS_BUILD_DIR/scripts/cleanup.sh && sudo -E $TRAVIS_BUILD_DIR/scripts/cleanup.sh
-    - export TAG=$ALPINE_VERSION-kernel-$KERNELVERSION
+    - export TAG=$ALPINE_VERSION-kernel-$KERNELVERSION-$REV
     - |
       if [ "${TRAVIS_OS_NAME}" = "linux" ] &&
         [ "${TRAVIS_BRANCH}" = "master" ] &&
