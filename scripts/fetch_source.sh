@@ -1,5 +1,21 @@
 #!/bin/bash -eux
 
+function clone_git() {
+    CACHEFILENAME="${CACHEDIR}/$1.tar.gz"
+    WORKDIR="${TRAVIS_BUILD_DIR}/$1"
+    if [ -f "${CACHEFILENAME}" ]; then
+        rm "${CACHEFILENAME}"
+    fi
+    if [ $# -eq 2 ]; then
+        git clone --depth 1 $2 "${WORKDIR}"
+        tar czfpC "${CACHEFILENAME}" "${WORKDIR}" .
+    else
+        git clone --depth 1 --branch $3 $2 "${WORKDIR}"
+        tar czfpC "${CACHEFILENAME}" "${WORKDIR}" .
+    fi
+    rm -rf "${WORKDIR}"
+}
+
 function fetch_git() {
     CACHEFILENAME="${CACHEDIR}/$1.tar.gz"
     WORKDIR="${TRAVIS_BUILD_DIR}/$1"
@@ -14,21 +30,14 @@ function fetch_git() {
         fi
         LATEST_REV=$(git ls-remote origin $BRANCHNAME | awk '{print $1}')
         CURRENT_REV=$(git rev-parse HEAD)
+        rm -rf "${WORKDIR}"
+
         if [ "$LATEST_REV" != "$CURRENT_REV" ]; then
-            git fetch
-            git merge FETCH_HEAD
-            git fetch --depth=1
-            git gc
-            tar czfpC "${CACHEFILENAME}" "${WORKDIR}" .
+            clone_git "$@"
         fi
-    elif [ $# -eq 2 ]; then
-        git clone --depth 1 $2 "${WORKDIR}"
-        tar czfpC "${CACHEFILENAME}" "${WORKDIR}" .
     else
-        git clone --depth 1 --branch $3 $2 "${WORKDIR}"
-        tar czfpC "${CACHEFILENAME}" "${WORKDIR}" .
+        clone_git "$@"
     fi
-    rm -rf "${WORKDIR}"
 }
 
 function fetch_file() {
