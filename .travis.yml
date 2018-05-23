@@ -26,7 +26,7 @@ jobs:
     - export REV=$(git rev-parse HEAD | cut -c 1-8)
     - export KERNELVERSION=`sudo -E cat ${CACHEDIR}/output/kernel/kernelversion`
     - sudo -E chmod a+x $CHROOTDIR/build/scripts/build.sh && sudo -E $CHROOTDIR/build/scripts/build.sh
-    - sudo -E mv $CHROOTDIR/build/output/alpine-rpi-*.tar.xz ${TRAVIS_BUILD_DIR}/
+    - sudo -E mv $CACHEDIR/output/alpine-rpi-*.tar.xz ${HOME}/
     - sudo -E chmod a+x $TRAVIS_BUILD_DIR/scripts/cleanup.sh && sudo -E $TRAVIS_BUILD_DIR/scripts/cleanup.sh
     - export TAG=$ALPINE_VERSION-kernel-$KERNELVERSION-$REV
     - |
@@ -42,7 +42,7 @@ jobs:
       provider: releases
       api_key: $GITHUB_TOKEN
       file_glob: true
-      file: ${TRAVIS_BUILD_DIR}/alpine-rpi-*.tar.xz
+      file: ${HOME}/alpine-rpi-*.tar.xz
       on:
         tags: true
 
