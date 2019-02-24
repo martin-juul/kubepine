@@ -10,7 +10,7 @@ else
     apt-get -yq install debootstrap dchroot apt dpkg dpkg-dev debianutils debconf binutils fakeroot
 
     cd "$CHROOTDIR"
-    debootstrap --arch amd64 --variant=buildd --no-check-gpg --include=software-properties-common,sudo bionic . http://us.archive.ubuntu.com/ubuntu/
+    debootstrap --arch amd64 --variant=buildd --no-check-gpg --include=software-properties-common,sudo bionic . http://eu.archive.ubuntu.com/ubuntu/
     mkdir -p "$CHROOTDIR/build/scripts"
 
     mount -o bind "$TRAVIS_BUILD_DIR/scripts" "$CHROOTDIR/build/scripts"
